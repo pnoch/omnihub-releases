@@ -215,6 +215,48 @@ h2 {
   font-size: 15px;
 }
 
+.shots {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 18px;
+  align-items: start;
+}
+
+.shots figure {
+  margin: 0;
+}
+
+.shots img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.shots figcaption {
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.shots .phone img {
+  max-height: 520px;
+  object-fit: cover;
+  object-position: top;
+}
+
+@media (max-width: 760px) {
+  .shots {
+    grid-template-columns: 1fr;
+  }
+
+  .shots .phone img {
+    max-height: none;
+  }
+}
+
 .licence {
   background: var(--accent);
   border-radius: var(--radius);
