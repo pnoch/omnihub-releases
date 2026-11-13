@@ -33,7 +33,10 @@
           with transcripts, notes, bookmarks and progress that travel with you.
         </p>
         <div class="actions">
-          <a class="button primary" id="android-download" href="#download"
+          <a
+            class="button primary"
+            id="android-download"
+            href="https://github.com/pnoch/omnihub-releases/releases/tag/android-latest"
             >Download for Android</a
           >
           <a
@@ -164,8 +167,10 @@
       // Paste the Paddle checkout link here when the product is live:
       const CHECKOUT_URL = "";
 
-      const MANIFEST =
-        "https://github.com/pnoch/omnihub-releases/releases/download/android-latest/android-latest.json";
+      // The release-asset manifest has no CORS headers, so the page asks the
+      // GitHub API (which does) for the asset instead of fetching the JSON.
+      const ANDROID_RELEASE =
+        "https://api.github.com/repos/pnoch/omnihub-releases/releases/tags/android-latest";
 
       document.getElementById("year").textContent = String(
         new Date().getFullYear(),
@@ -178,23 +183,28 @@
         document.getElementById("buy-soon").hidden = true;
       }
 
-      fetch(MANIFEST)
+      fetch(ANDROID_RELEASE, {
+        headers: { Accept: "application/vnd.github+json" },
+      })
         .then((response) => (response.ok ? response.json() : null))
-        .then((manifest) => {
-          if (!manifest || !manifest.apkFile) return;
-          const base = MANIFEST.slice(0, MANIFEST.lastIndexOf("/") + 1);
-          const url = base + manifest.apkFile;
+        .then((release) => {
+          const apk = release?.assets?.find((asset) =>
+            asset.name.endsWith(".apk"),
+          );
+          if (!apk || !apk.browser_download_url) return;
           for (const id of ["android-download", "android-download-2"]) {
-            document.getElementById(id).href = url;
+            document.getElementById(id).href = apk.browser_download_url;
           }
-          const size = manifest.size
-            ? ` · ${Math.round(manifest.size / 1048576)} MB`
+          const version = /OmniHub-(\d+\.\d+\.\d+)/.exec(apk.name);
+          const size = apk.size
+            ? ` · ${Math.round(apk.size / 1048576)} MB`
             : "";
           document.getElementById("android-version").textContent =
-            `Version ${manifest.versionName}${size}. Android installs from an APK and updates itself in place.`;
+            `${version ? `Version ${version[1]}` : "Latest build"}${size}. ` +
+            "Android installs from an APK and updates itself in place.";
         })
         .catch(() => {
-          // The release page link below still works without the manifest.
+          // The release-page links still work without the API.
         });
     </script>
   </body>
