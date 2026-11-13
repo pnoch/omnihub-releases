@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>OmniHub — your offline media library</title>
+    <meta
+      name="description"
+      content="Keep the videos and courses you have access to on your own device, with transcripts, notes, bookmarks and progress that travel with you."
+    />
+    <link rel="icon" href="icon.png" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site">
+      <div class="wrap">
+        <img src="icon.png" alt="" />
+        <span class="name">OmniHub</span>
+        <nav aria-label="Main">
+          <a href="#features">Features</a>
+          <a href="#licence">Licence</a>
+          <a href="#download">Download</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero wrap">
+        <img class="logo" src="icon.png" alt="OmniHub icon" />
+        <h1>Your offline media library</h1>
+        <p class="lede">
+          Keep the videos and courses you have access to on your own device —
+          with transcripts, notes, bookmarks and progress that travel with you.
+        </p>
+        <div class="actions">
+          <a class="button primary" id="android-download" href="#download"
+            >Download for Android</a
+          >
+          <a
+            class="button secondary"
+            href="https://github.com/pnoch/omnihub-releases/releases/latest"
+            >Download for desktop</a
+          >
+        </div>
+        <p class="muted" id="android-version">
+          Android installs from an APK and updates itself in place.
+        </p>
+      </section>
+
+      <section class="wrap" id="features">
+        <h2>Built for watching away from the network</h2>
+        <p class="section-lede">
+          A player and a library, not another streaming account. Everything you
+          save stays on your device.
+        </p>
+        <div class="grid">
+          <article class="card">
+            <h3>Offline first</h3>
+            <p>
+              Save video and audio for flights, commutes and unreliable Wi-Fi.
+              Playback never needs the server that served it.
+            </p>
+          </article>
+          <article class="card">
+            <h3>Transcripts you can search</h3>
+            <p>
+              Search every lesson for a phrase and jump straight to the moment
+              it was said.
+            </p>
+          </article>
+          <article class="card">
+            <h3>Notes and bookmarks</h3>
+            <p>
+              Timestamped notes and bookmarks that return to the exact second,
+              kept next to the lesson.
+            </p>
+          </article>
+          <article class="card">
+            <h3>Sync over your own network</h3>
+            <p>
+              Move your library between the desktop and Android apps over your
+              local network. No cloud account, no upload.
+            </p>
+          </article>
+          <article class="card">
+            <h3>Subtitles and translation</h3>
+            <p>
+              Read along with subtitles, generate them from the audio, and
+              translate with your own Ollama endpoint if you run one.
+            </p>
+          </article>
+          <article class="card">
+            <h3>No account</h3>
+            <p>
+              Your licence is a key checked on the device. Nothing about your
+              library is sent to us.
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section class="wrap" id="licence">
+        <div class="licence">
+          <div>
+            <h2>One-time licence</h2>
+            <p>
+              Try every feature for five minutes of active use, then unlock
+              downloads and playback with a licence. One key works on desktop
+              and Android.
+            </p>
+          </div>
+          <div class="actions">
+            <a
+              class="button primary"
+              id="buy"
+              href="#"
+              hidden
+              >Buy a licence</a
+            >
+            <span class="muted" id="buy-soon">Checkout is opening soon.</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="wrap" id="download">
+        <h2>Download</h2>
+        <p class="section-lede">
+          The Android build installs from an APK; Android asks you to allow
+          installs from this source the first time, then updates arrive inside
+          the app. The desktop build is a Linux AppImage or .deb.
+        </p>
+        <div class="actions" style="justify-content: flex-start">
+          <a class="button primary" id="android-download-2" href="https://github.com/pnoch/omnihub-releases/releases/tag/android-latest"
+            >Android APK</a
+          >
+          <a
+            class="button secondary"
+            href="https://github.com/pnoch/omnihub-releases/releases/latest"
+            >Desktop (Linux)</a
+          >
+        </div>
+        <p class="muted">
+          Release notes and older versions live on
+          <a href="https://github.com/pnoch/omnihub-releases/releases"
+            >GitHub Releases</a
+          >.
+        </p>
+      </section>
+    </main>
+
+    <footer class="site">
+      <div class="wrap">
+        <span>© <span id="year">2026</span> OmniHub</span>
+        <nav aria-label="Legal">
+          <a href="privacy.html">Privacy</a>
+          <a href="refunds.html">Refunds</a>
+          <a href="terms.html">Terms</a>
+          <a href="https://github.com/pnoch/omnihub-releases/issues">Support</a>
+        </nav>
+      </div>
+    </footer>
+
+    <script>
+      // Paste the Paddle checkout link here when the product is live:
+      const CHECKOUT_URL = "";
+
+      const MANIFEST =
+        "https://github.com/pnoch/omnihub-releases/releases/download/android-latest/android-latest.json";
+
+      document.getElementById("year").textContent = String(
+        new Date().getFullYear(),
+      );
+
+      if (CHECKOUT_URL) {
+        const buy = document.getElementById("buy");
+        buy.href = CHECKOUT_URL;
+        buy.hidden = false;
+        document.getElementById("buy-soon").hidden = true;
+      }
+
+      fetch(MANIFEST)
+        .then((response) => (response.ok ? response.json() : null))
+        .then((manifest) => {
+          if (!manifest || !manifest.apkFile) return;
+          const base = MANIFEST.slice(0, MANIFEST.lastIndexOf("/") + 1);
+          const url = base + manifest.apkFile;
+          for (const id of ["android-download", "android-download-2"]) {
+            document.getElementById(id).href = url;
+          }
+          const size = manifest.size
+            ? ` · ${Math.round(manifest.size / 1048576)} MB`
+            : "";
+          document.getElementById("android-version").textContent =
+            `Version ${manifest.versionName}${size}. Android installs from an APK and updates itself in place.`;
+        })
+        .catch(() => {
+          // The release page link below still works without the manifest.
+        });
+    </script>
+  </body>
+</html>

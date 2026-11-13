@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Privacy — OmniHub</title>
+    <link rel="icon" href="icon.png" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site">
+      <div class="wrap">
+        <img src="icon.png" alt="" />
+        <span class="name"><a href="index.html">OmniHub</a></span>
+      </div>
+    </header>
+
+    <main class="legal wrap">
+      <h1>Privacy</h1>
+      <p class="updated">Last updated 14 November 2026</p>
+
+      <p>
+        OmniHub is a local-first application. Your library — the videos,
+        courses, transcripts, notes and settings you save — stays on your
+        device. There is no OmniHub account and no library server.
+      </p>
+
+      <h2>What the app stores on your device</h2>
+      <ul>
+        <li>The media files and metadata you save.</li>
+        <li>Notes, bookmarks, transcripts and playback progress.</li>
+        <li>Your settings, including any Ollama endpoint you configure.</li>
+        <li>Your licence key, so the app can work without a network.</li>
+      </ul>
+      <p>
+        None of this is uploaded by the app. Wi-Fi sync sends library data only
+        to the desktop address you enter on your own network.
+      </p>
+
+      <h2>What we receive</h2>
+      <ul>
+        <li>
+          <strong>Purchases.</strong> Payments are handled by a merchant of
+          record. We receive the buyer email, order id and the fact of payment —
+          never card details.
+        </li>
+        <li>
+          <strong>Crash reports.</strong> The Android app can send a crash report
+          with the device model, OS version and a stack trace. It does not
+          include your library, filenames or notes.
+        </li>
+        <li>
+          <strong>Support messages.</strong> Whatever you choose to write in a
+          support request.
+        </li>
+      </ul>
+
+      <h2>Optional AI features</h2>
+      <p>
+        Translation and generated subtitles can use an Ollama endpoint you run
+        and configure. Requests go directly to that endpoint; we do not proxy
+        them and do not receive their content.
+      </p>
+
+      <h2>Payments</h2>
+      <p>
+        The checkout is operated by a merchant of record, which is the seller of
+        record for the transaction and handles sales tax and VAT. Their privacy
+        policy applies to the payment step.
+      </p>
+
+      <h2>Your choices</h2>
+      <p>
+        Uninstalling the app removes its local data. To ask about purchase
+        records, use the support link below; records required for tax and
+        accounting may be kept for the period the law requires.
+      </p>
+
+      <h2>Changes</h2>
+      <p>
+        If this policy changes, the date above changes with it. Material changes
+        will be noted on this page.
+      </p>
+
+      <h2>Contact</h2>
+      <p>
+        <a href="https://github.com/pnoch/omnihub-releases/issues">Support</a>
+      </p>
+    </main>
+
+    <footer class="site">
+      <div class="wrap">
+        <span>© <span id="year">2026</span> OmniHub</span>
+        <nav aria-label="Legal">
+          <a href="privacy.html">Privacy</a>
+          <a href="refunds.html">Refunds</a>
+          <a href="terms.html">Terms</a>
+          <a href="https://github.com/pnoch/omnihub-releases/issues">Support</a>
+        </nav>
+      </div>
+    </footer>
+    <script>
+      document.getElementById("year").textContent = String(
+        new Date().getFullYear(),
+      );
+    </script>
+  </body>
+</html>
