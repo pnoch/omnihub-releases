@@ -257,7 +257,19 @@ h2 {
   }
 }
 
+.price {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 2px 0 6px;
+}
+
+.price .muted {
+  font-size: 14px;
+  font-weight: 400;
+}
+
 .licence {
+
   background: var(--accent);
   border-radius: var(--radius);
   padding: 30px;
