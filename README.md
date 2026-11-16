@@ -8,9 +8,22 @@ rolling `android-latest` prerelease, with `android-latest.json` beside the APK.
 
 ## Website
 
-The landing page is in `docs/` and is served by GitHub Pages:
-<https://pnoch.github.io/omnihub-releases/>.
+The landing page is in `docs/` and is served by GitHub Pages at
+<https://omnihub.siamcreations.app/> (custom domain) and
+<https://pnoch.github.io/omnihub-releases/> (project URL until the CNAME is
+live).
 
+- **Custom domain:** `docs/CNAME` must contain `omnihub.siamcreations.app` and
+  DNS must point the subdomain at `pnoch.github.io` (CNAME, replacing any A
+  record). Set the domain in the Pages settings once DNS resolves, then enforce
+  HTTPS. Do not add `CNAME` before DNS is switched: Pages redirects the project
+  URL to the custom domain, so the site would be unreachable at both.
+- **App links:** `docs/.well-known/assetlinks.json` associates
+  `com.siamcreations.omnihub` with the release signing certificate. Android
+  release builds set `EXPO_PUBLIC_SHARE_DOMAIN=omnihub.siamcreations.app`, and
+  the release script refuses to publish if the file is not reachable.
+  `docs/404.html` is the fallback for a shared `/course/...` link when the app
+  is not installed.
 - **Turning the store on:** paste the checkout link into `CHECKOUT_URL` in
   `docs/index.html`. The Buy button appears and the "opening soon" line hides.
 - **Legal pages:** `privacy.html`, `refunds.html` and `terms.html` are drafts.
