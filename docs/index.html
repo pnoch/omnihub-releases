@@ -168,12 +168,11 @@
             </p>
           </div>
           <div class="actions">
-            <a
-              class="button primary"
-              id="buy"
-              href="#"
-              hidden
-              >Buy a licence</a
+            <a class="button primary" id="buy-standard" href="#" hidden
+              >Buy Standard — US$39</a
+            >
+            <a class="button secondary" id="buy-pro" href="#" hidden
+              >Buy Pro — US$59</a
             >
             <span class="muted" id="buy-soon">Checkout is opening soon.</span>
           </div>
@@ -213,14 +212,16 @@
           <a href="privacy.html">Privacy</a>
           <a href="refunds.html">Refunds</a>
           <a href="terms.html">Terms</a>
-          <a href="https://github.com/pnoch/omnihub-releases/issues">Support</a>
+          <a href="mailto:support@omnihub.siamcreations.app">Support</a>
         </nav>
       </div>
     </footer>
 
     <script>
-      // Paste the Paddle checkout link here when the product is live:
-      const CHECKOUT_URL = "";
+      // Paste the Paddle checkout links here when the products are live.
+      // Each button appears on its own, so Standard can launch before Pro.
+      const CHECKOUT_URL_STANDARD = "";
+      const CHECKOUT_URL_PRO = "";
 
       // The release-asset manifest has no CORS headers, so the page asks the
       // GitHub API (which does) for the asset instead of fetching the JSON.
@@ -231,10 +232,21 @@
         new Date().getFullYear(),
       );
 
-      if (CHECKOUT_URL) {
-        const buy = document.getElementById("buy");
-        buy.href = CHECKOUT_URL;
-        buy.hidden = false;
+      function wireCheckout(id, url) {
+        if (!url) return false;
+        const button = document.getElementById(id);
+        if (!button) return false;
+        button.href = url;
+        button.hidden = false;
+        return true;
+      }
+
+      const standardCheckout = wireCheckout(
+        "buy-standard",
+        CHECKOUT_URL_STANDARD,
+      );
+      const proCheckout = wireCheckout("buy-pro", CHECKOUT_URL_PRO);
+      if (standardCheckout || proCheckout) {
         document.getElementById("buy-soon").hidden = true;
       }
 

@@ -137,6 +137,12 @@ header.site nav a:hover {
   justify-content: center;
 }
 
+.licence .actions {
+  flex-direction: column;
+  align-items: stretch;
+  min-width: 220px;
+}
+
 .button {
   display: inline-flex;
   align-items: center;

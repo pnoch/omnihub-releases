@@ -19,13 +19,17 @@ live).
   HTTPS. Do not add `CNAME` before DNS is switched: Pages redirects the project
   URL to the custom domain, so the site would be unreachable at both.
 - **App links:** `docs/.well-known/assetlinks.json` associates
-  `com.siamcreations.omnihub` with the release signing certificate. Android
+  `app.siamcreations.omnihub` with the release signing certificate. Android
   release builds set `EXPO_PUBLIC_SHARE_DOMAIN=omnihub.siamcreations.app`, and
   the release script refuses to publish if the file is not reachable.
   `docs/404.html` is the fallback for a shared `/course/...` link when the app
   is not installed.
-- **Turning the store on:** paste the checkout link into `CHECKOUT_URL` in
-  `docs/index.html`. The Buy button appears and the "opening soon" line hides.
+- **Turning the store on:** paste the two Paddle checkout links into
+  `CHECKOUT_URL_STANDARD` and `CHECKOUT_URL_PRO` in `docs/index.html`. Each
+  plan button appears independently, and the "opening soon" line hides once
+  either link is set.
+- **Support:** the footer and legal pages point at
+  `support@omnihub.siamcreations.app`. Create that mailbox before publishing.
 - **Legal pages:** `privacy.html`, `refunds.html` and `terms.html` are drafts.
   Have them reviewed before taking money; they describe what the app actually
   does today.
