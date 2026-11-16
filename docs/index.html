@@ -217,11 +217,15 @@
       </div>
     </footer>
 
+    <script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
     <script>
-      // Paste the Paddle checkout links here when the products are live.
-      // Each button appears on its own, so Standard can launch before Pro.
-      const CHECKOUT_URL_STANDARD = "";
-      const CHECKOUT_URL_PRO = "";
+      // Paddle.js overlay checkout. Sandbox IDs only show the buttons on
+      // localhost or with ?paddle=sandbox; replace all four values with the
+      // production token and prices at launch.
+      const PADDLE_ENVIRONMENT = "sandbox"; // "production" when live
+      const PADDLE_CLIENT_TOKEN = "test_0cc2182c718aa9f62a02993613b";
+      const PADDLE_PRICE_STANDARD = "pri_01m7jfwwctdx2z46jr6p6x329d";
+      const PADDLE_PRICE_PRO = "pri_01m7jfwx1ybew67s051gza8bgq";
 
       // The release-asset manifest has no CORS headers, so the page asks the
       // GitHub API (which does) for the asset instead of fetching the JSON.
@@ -232,22 +236,53 @@
         new Date().getFullYear(),
       );
 
-      function wireCheckout(id, url) {
-        if (!url) return false;
+      const sandboxPreview =
+        ["localhost", "127.0.0.1"].includes(location.hostname) ||
+        new URLSearchParams(location.search).get("paddle") === "sandbox";
+      const canOpenCheckout =
+        PADDLE_ENVIRONMENT !== "sandbox" || sandboxPreview;
+
+      let paddle = null;
+      if (canOpenCheckout && PADDLE_CLIENT_TOKEN && window.Paddle) {
+        try {
+          if (PADDLE_ENVIRONMENT === "sandbox") {
+            window.Paddle.Environment.set("sandbox");
+          }
+          window.Paddle.Initialize({ token: PADDLE_CLIENT_TOKEN });
+          paddle = window.Paddle;
+        } catch (error) {
+          console.error("[Paddle] initialization failed", error);
+        }
+      }
+
+      function wireCheckout(id, priceId) {
         const button = document.getElementById(id);
-        if (!button) return false;
-        button.href = url;
+        if (!button || !paddle || !priceId) return false;
         button.hidden = false;
+        button.addEventListener("click", (event) => {
+          event.preventDefault();
+          paddle.Checkout.open({
+            items: [{ priceId, quantity: 1 }],
+            settings: { variant: "one-page" },
+          });
+        });
         return true;
       }
 
       const standardCheckout = wireCheckout(
         "buy-standard",
-        CHECKOUT_URL_STANDARD,
+        PADDLE_PRICE_STANDARD,
       );
-      const proCheckout = wireCheckout("buy-pro", CHECKOUT_URL_PRO);
+      const proCheckout = wireCheckout("buy-pro", PADDLE_PRICE_PRO);
       if (standardCheckout || proCheckout) {
         document.getElementById("buy-soon").hidden = true;
+      }
+
+      // Hosted checkouts sent through the default payment link carry a
+      // transaction id; open it once Paddle.js is ready.
+      const transactionId = new URLSearchParams(location.search).get("_ptxn");
+      if (paddle && transactionId) {
+        paddle.Checkout.open({ transactionId });
       }
 
       fetch(ANDROID_RELEASE, {

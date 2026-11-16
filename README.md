@@ -24,10 +24,12 @@ live).
   the release script refuses to publish if the file is not reachable.
   `docs/404.html` is the fallback for a shared `/course/...` link when the app
   is not installed.
-- **Turning the store on:** paste the two Paddle checkout links into
-  `CHECKOUT_URL_STANDARD` and `CHECKOUT_URL_PRO` in `docs/index.html`. Each
-  plan button appears independently, and the "opening soon" line hides once
-  either link is set.
+- **Turning the store on:** the page uses a Paddle.js overlay checkout. Set
+  `PADDLE_ENVIRONMENT`, `PADDLE_CLIENT_TOKEN`, `PADDLE_PRICE_STANDARD` and
+  `PADDLE_PRICE_PRO` in `docs/index.html`. The sandbox values only show the
+  buttons on `localhost`/`127.0.0.1` or with `?paddle=sandbox`; replace all
+  four with the live values before launch. Checkout alone is not fulfilment:
+  the webhook must still issue and send the licence key.
 - **Support:** the footer and legal pages point at
   `support@siamcreations.app`; the mailbox is live.
 - **Legal pages:** `privacy.html`, `refunds.html` and `terms.html` are drafts.
