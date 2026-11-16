@@ -29,7 +29,7 @@ live).
   plan button appears independently, and the "opening soon" line hides once
   either link is set.
 - **Support:** the footer and legal pages point at
-  `support@siamcreations.app`. Create that mailbox before publishing.
+  `support@siamcreations.app`; the mailbox is live.
 - **Legal pages:** `privacy.html`, `refunds.html` and `terms.html` are drafts.
   Have them reviewed before taking money; they describe what the app actually
   does today.
