@@ -242,8 +242,14 @@
       const canOpenCheckout =
         PADDLE_ENVIRONMENT !== "sandbox" || sandboxPreview;
 
+      // A hosted checkout link arrives as ?_ptxn=txn_… and names one exact
+      // transaction, so it opens even where the plan buttons stay hidden.
+      // Without this the default payment link from the Paddle dashboard led
+      // to a page that never initialised Paddle.
+      const transactionId = new URLSearchParams(location.search).get("_ptxn");
+
       let paddle = null;
-      if (canOpenCheckout && PADDLE_CLIENT_TOKEN && window.Paddle) {
+      if ((canOpenCheckout || transactionId) && PADDLE_CLIENT_TOKEN && window.Paddle) {
         try {
           if (PADDLE_ENVIRONMENT === "sandbox") {
             window.Paddle.Environment.set("sandbox");
@@ -257,7 +263,10 @@
 
       function wireCheckout(id, priceId) {
         const button = document.getElementById(id);
-        if (!button || !paddle || !priceId) return false;
+        // The hosted-checkout path initialises Paddle too, so the preview gate
+        // is checked here as well: a sandbox build must not show buy buttons on
+        // the public site just because a ?_ptxn link is being honoured.
+        if (!button || !paddle || !priceId || !canOpenCheckout) return false;
         button.hidden = false;
         button.addEventListener("click", (event) => {
           event.preventDefault();
@@ -280,7 +289,6 @@
 
       // Hosted checkouts sent through the default payment link carry a
       // transaction id; open it once Paddle.js is ready.
-      const transactionId = new URLSearchParams(location.search).get("_ptxn");
       if (paddle && transactionId) {
         paddle.Checkout.open({ transactionId });
       }

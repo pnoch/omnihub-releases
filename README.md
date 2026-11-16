@@ -30,6 +30,11 @@ live).
   buttons on `localhost`/`127.0.0.1` or with `?paddle=sandbox`; replace all
   four with the live values before launch. Checkout alone is not fulfilment:
   the webhook must still issue and send the licence key.
+- **Hosted checkout links:** a link from Paddle's default payment link arrives
+  as `?_ptxn=txn_…` and opens its transaction even where the plan buttons are
+  hidden, so a payment link sent from the dashboard works on the custom domain.
+  The site domain must still be approved under Paddle > Settings > Website
+  approval before live checkout accepts a `checkout.url`.
 - **Support:** the footer and legal pages point at
   `support@siamcreations.app`; the mailbox is live.
 - **Legal pages:** `privacy.html`, `refunds.html` and `terms.html` are drafts.
