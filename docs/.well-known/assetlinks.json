@@ -3,7 +3,7 @@
     "relation": ["delegate_permission/common.handle_all_urls"],
     "target": {
       "namespace": "android_app",
-      "package_name": "com.siamcreations.omnihub",
+      "package_name": "app.siamcreations.omnihub",
       "sha256_cert_fingerprints": [
         "F5:7F:0F:EB:25:83:0E:E8:D6:56:C3:E1:16:2A:7F:6D:12:F4:AD:56:A2:7C:C5:78:06:28:D4:64:71:69:EE:00"
       ]
