@@ -26,6 +26,32 @@
         cannot be used anywhere else.
       </p>
 
+      <div id="collect" hidden>
+        <p>
+          Buying on this computer? You need the code from the app first: install
+          OmniHub, open <strong>Settings → Licence</strong>, and copy the code
+          it shows. It is what binds the key to your device.
+        </p>
+        <input
+          id="code-input"
+          type="text"
+          autocomplete="off"
+          autocomplete="off"
+          placeholder="OMNI-XXXX-XXXX-XXXX-XXXX"
+          style="
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #e4e7ec;
+          "
+        />
+        <p>
+          <button class="button primary" id="use-code" type="button">
+            Use this code
+          </button>
+        </p>
+      </div>
+
       <div id="plans">
         <p>
           <button class="button primary" data-plan="standard" type="button">
@@ -70,10 +96,15 @@
         /^OMNI-[0-9A-HJKMNP-TV-Z]{4}(-[0-9A-HJKMNP-TV-Z]{4}){3}$/.test(code);
 
       if (!code) {
-        deviceCode.textContent = "missing";
-        status.textContent =
-          "Open this page from the app: it passes your device code automatically.";
+        deviceCode.textContent = "—";
+        document.getElementById("device-hint").textContent =
+          "Enter the code from the app to continue.";
+        document.getElementById("collect").hidden = false;
         plans.hidden = true;
+        document.getElementById("use-code").addEventListener("click", () => {
+          const entered = document.getElementById("code-input").value.trim();
+          location.search = `?code=${encodeURIComponent(entered)}`;
+        });
       } else {
         deviceCode.textContent = code;
         if (!looksValid) {
