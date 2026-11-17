@@ -219,13 +219,17 @@
 
     <script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
     <script>
-      // Paddle.js overlay checkout. Sandbox IDs only show the buttons on
-      // localhost or with ?paddle=sandbox; replace all four values with the
-      // production token and prices at launch.
-      const PADDLE_ENVIRONMENT = "sandbox"; // "production" when live
-      const PADDLE_CLIENT_TOKEN = "test_0cc2182c718aa9f62a02993613b";
-      const PADDLE_PRICE_STANDARD = "pri_01m7jmgnk3rga2db8vye733nhx";
-      const PADDLE_PRICE_PRO = "pri_01m7jmgnwreqdqwpfjaw1e2107";
+      // Paddle live. The client token is a *client-side* token: public by
+      // design, and it belongs in the page. The API key never appears here.
+      const PADDLE_CLIENT_TOKEN = "live_b196e2ba710b930d6958e7e965c";
+      const PADDLE_PRICE_STANDARD = "pri_01m7knq6x95m3g07vkq6m7jgtp";
+      const PADDLE_PRICE_PRO = "pri_01m7knq8g3nz5x0tp04qxcgd8t";
+
+      // Paddle loads a live checkout only on an approved domain, and
+      // `omnihub.siamcreations.app` is still in review, so the buttons stay
+      // hidden: a buy button that opens a checkout which cannot load is worse
+      // than "opening soon". Flip to true once the domain is approved.
+      const CHECKOUT_READY = false;
 
       // The release-asset manifest has no CORS headers, so the page asks the
       // GitHub API (which does) for the asset instead of fetching the JSON.
@@ -236,12 +240,6 @@
         new Date().getFullYear(),
       );
 
-      const sandboxPreview =
-        ["localhost", "127.0.0.1"].includes(location.hostname) ||
-        new URLSearchParams(location.search).get("paddle") === "sandbox";
-      const canOpenCheckout =
-        PADDLE_ENVIRONMENT !== "sandbox" || sandboxPreview;
-
       // A hosted checkout link arrives as ?_ptxn=txn_… and names one exact
       // transaction, so it opens even where the plan buttons stay hidden.
       // Without this the default payment link from the Paddle dashboard led
@@ -250,14 +248,11 @@
 
       let paddle = null;
       if (
-        (canOpenCheckout || transactionId) &&
+        (CHECKOUT_READY || transactionId) &&
         PADDLE_CLIENT_TOKEN &&
         window.Paddle
       ) {
         try {
-          if (PADDLE_ENVIRONMENT === "sandbox") {
-            window.Paddle.Environment.set("sandbox");
-          }
           window.Paddle.Initialize({ token: PADDLE_CLIENT_TOKEN });
           paddle = window.Paddle;
         } catch (error) {
@@ -267,10 +262,7 @@
 
       function wireCheckout(id, priceId) {
         const button = document.getElementById(id);
-        // The hosted-checkout path initialises Paddle too, so the preview gate
-        // is checked here as well: a sandbox build must not show buy buttons on
-        // the public site just because a ?_ptxn link is being honoured.
-        if (!button || !paddle || !priceId || !canOpenCheckout) return false;
+        if (!button || !paddle || !priceId) return false;
         button.hidden = false;
         button.addEventListener("click", (event) => {
           event.preventDefault();
