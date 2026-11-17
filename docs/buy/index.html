@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Buy OmniHub — one licence, one device</title>
+    <meta name="robots" content="noindex" />
+    <link rel="icon" href="../icon.png" />
+    <link rel="stylesheet" href="../styles.css" />
+  </head>
+  <body>
+    <header class="site">
+      <div class="wrap">
+        <img src="../icon.png" alt="" />
+        <span class="name"><a href="../">OmniHub</a></span>
+      </div>
+    </header>
+
+    <main class="legal wrap">
+      <h1>Buy OmniHub</h1>
+      <p class="updated">One-time licence. One device per key.</p>
+
+      <p id="device-line">Device code: <strong id="device-code">—</strong></p>
+      <p class="muted" id="device-hint">
+        This code came from the app. The key is issued for this device, so it
+        cannot be used anywhere else.
+      </p>
+
+      <div id="plans">
+        <p>
+          <button class="button primary" data-plan="standard" type="button">
+            Buy Standard — US$9.99
+          </button>
+        </p>
+        <p>
+          <button class="button primary" data-plan="pro" type="button">
+            Buy Pro — US$19.99
+          </button>
+        </p>
+      </div>
+
+      <p class="muted" id="status"></p>
+
+      <p class="muted">
+        Payments are processed by Paddle, the merchant of record, which handles
+        sales tax and invoices. Refunds within 14 days — see the
+        <a href="https://siamcreations.app/refunds/">refund policy</a>.
+      </p>
+    </main>
+
+    <script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
+    <script>
+      // Live values. The client token is public by design.
+      const PADDLE_CLIENT_TOKEN = "live_b196e2ba710b930d6958e7e965c";
+      const PRICES = {
+        standard: "pri_01m7knq6x95m3g07vkq6m7jgtp",
+        pro: "pri_01m7knq8g3nz5x0tp04qxcgd8t",
+      };
+
+      const params = new URLSearchParams(location.search);
+      const code = (params.get("code") ?? "").trim().toUpperCase();
+      const deviceCode = document.getElementById("device-code");
+      const status = document.getElementById("status");
+      const plans = document.getElementById("plans");
+
+      // Shape only: the checksum is verified by the fulfilment service before a
+      // key is minted, so a mistyped code fails there rather than silently
+      // binding the licence to a device that does not exist.
+      const looksValid =
+        /^OMNI-[0-9A-HJKMNP-TV-Z]{4}(-[0-9A-HJKMNP-TV-Z]{4}){3}$/.test(code);
+
+      if (!code) {
+        deviceCode.textContent = "missing";
+        status.textContent =
+          "Open this page from the app: it passes your device code automatically.";
+        plans.hidden = true;
+      } else {
+        deviceCode.textContent = code;
+        if (!looksValid) {
+          status.textContent =
+            "That code does not look right. Copy it again from the app's licence screen.";
+          plans.hidden = true;
+        }
+      }
+
+      let paddle = null;
+      if (looksValid && window.Paddle) {
+        try {
+          window.Paddle.Initialize({ token: PADDLE_CLIENT_TOKEN });
+          paddle = window.Paddle;
+        } catch (error) {
+          console.error("[Paddle] initialization failed", error);
+        }
+      }
+
+      for (const button of document.querySelectorAll("[data-plan]")) {
+        button.addEventListener("click", () => {
+          if (!paddle) {
+            status.textContent = "Checkout is unavailable right now.";
+            return;
+          }
+          const plan = button.getAttribute("data-plan");
+          status.textContent = "Opening checkout…";
+          paddle.Checkout.open({
+            items: [{ priceId: PRICES[plan], quantity: 1 }],
+            // Travels to the webhook, which mints the key for this device.
+            customData: { device_code: code },
+            settings: {
+              variant: "one-page",
+              // Close the loop back into the app after payment.
+              successUrl: "omnihub://licence?purchased=1",
+            },
+          });
+        });
+      }
+    </script>
+  </body>
+</html>
