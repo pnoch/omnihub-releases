@@ -1,12 +1,7 @@
-# Company page
+# Company page (moved)
 
-Served at <https://omnihub.siamcreations.app/company/> so the URL Paddle has on
-file (`https://siamcreations.app`) has somewhere to point today.
+The page now lives at <https://siamcreations.app/>, served by
+`pnoch/siamcreations-site`. This directory is a redirect so links to the old
+`/company/` path keep working.
 
-The canonical copy is its own Pages site, `pnoch/siamcreations-site`, which will
-serve `https://siamcreations.app` once the apex A records point at GitHub Pages.
-When that is live, delete this directory (or leave it and keep the two in step):
-it is a stopgap, not a second home.
-
-Links to the product pages are absolute, so the page reads correctly from either
-host.
+Do not add content here; edit the page in its own repository.
