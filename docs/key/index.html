@@ -98,17 +98,19 @@
         padding: 0 18px;
         font-family: inherit;
       }
-      #copy {
+      a.primary {
         background: var(--primary);
         color: var(--primary-text);
       }
-      #copy.done {
-        background: var(--ok);
-      }
-      a.btn {
+      #copy {
         background: transparent;
         color: var(--accent);
         border: 1px solid var(--border);
+      }
+      #copy.done {
+        background: var(--ok);
+        color: #ffffff;
+        border-color: var(--ok);
       }
       .hint {
         color: var(--muted);
@@ -146,8 +148,10 @@
         <p class="label">Licence key</p>
         <p id="key"></p>
         <div class="row">
+          <a class="btn primary" id="open" href="omnihub://licence"
+            >Activate in OmniHub</a
+          >
           <button id="copy" type="button">Copy key</button>
-          <a class="btn" id="open" href="omnihub://licence">Open OmniHub</a>
         </div>
         <p class="hint" id="status" role="status" aria-live="polite"></p>
       </div>
@@ -219,7 +223,7 @@
         copy.textContent = "Copied";
         copy.classList.add("done");
         status.textContent =
-          "Now open OmniHub → Settings → Licence and paste it.";
+          "Copied. Open OmniHub → Settings → Licence and paste it, or use Activate in OmniHub.";
         setTimeout(() => {
           copy.textContent = "Copy key";
           copy.classList.remove("done");
