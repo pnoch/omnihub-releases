@@ -181,7 +181,22 @@
           if (environment === "sandbox") {
             window.Paddle.Environment.set("sandbox");
           }
-          window.Paddle.Initialize({ token: PADDLE_CLIENT_TOKEN });
+          window.Paddle.Initialize({
+            token: PADDLE_CLIENT_TOKEN,
+            // Without this the overlay can fail to appear and the page just
+            // sits on "Opening checkout…" forever. Paddle reports why.
+            eventCallback: (event) => {
+              if (event?.name === "checkout.error") {
+                const detail = event.data?.detail || event.data?.message || "";
+                status.textContent = detail
+                  ? `Checkout could not open: ${detail}. Try another browser.`
+                  : "Checkout could not open. Try another browser, or contact support.";
+              }
+              if (event?.name === "checkout.loaded") {
+                status.textContent = "";
+              }
+            },
+          });
           paddle = window.Paddle;
         } catch (error) {
           console.error("[Paddle] initialization failed", error);
