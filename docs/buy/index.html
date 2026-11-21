@@ -94,11 +94,37 @@
       const status = document.getElementById("status");
       const plans = document.getElementById("plans");
 
-      // Shape only: the checksum is verified by the fulfilment service before a
-      // key is minted, so a mistyped code fails there rather than silently
-      // binding the licence to a device that does not exist.
-      const looksValid =
-        /^OMNI-[0-9A-HJKMNP-TV-Z]{4}(-[0-9A-HJKMNP-TV-Z]{4}){3}$/.test(code);
+      // Crockford base32, same alphabet and checksum as the app. Checking the
+      // checksum here matters: shape alone accepts a typo, and a typo would take
+      // the money for a sale no key can be issued for.
+      const ALPHABET = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
+
+      function checksumOk(text) {
+        let bits = 0;
+        let value = 0;
+        const bytes = [];
+        for (const char of text.slice(0, 15)) {
+          const index = ALPHABET.indexOf(char);
+          if (index === -1) return false;
+          value = (value << 5) | index;
+          bits += 5;
+          if (bits >= 8) {
+            bits -= 8;
+            bytes.push((value >>> bits) & 0xff);
+            value &= (1 << bits) - 1;
+          }
+        }
+        if (bytes.length !== 9) return false;
+        const expected = ALPHABET[(bytes[0] ^ bytes[1] ^ bytes[2]) & 31];
+        return text[15] === expected;
+      }
+
+      function looksValid(code) {
+        const shape =
+          /^OMNI-[0-9A-HJKMNP-TV-Z]{4}(-[0-9A-HJKMNP-TV-Z]{4}){3}$/.test(code);
+        if (!shape) return false;
+        return checksumOk(code.replace(/^OMNI-/, "").replace(/-/g, ""));
+      }
 
       if (!code) {
         deviceCode.textContent = "—";
@@ -114,7 +140,7 @@
         deviceCode.textContent = code;
         if (!looksValid) {
           status.textContent =
-            "That code does not look right. Copy it again from the app's licence screen.";
+            "That code does not check out. Copy it again from the app's licence screen — a mistyped code cannot be turned into a key.";
           plans.hidden = true;
         }
       }
