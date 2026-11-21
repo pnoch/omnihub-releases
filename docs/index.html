@@ -285,10 +285,15 @@
         document.getElementById("buy-soon").hidden = true;
       }
 
-      // Hosted checkouts sent through the default payment link carry a
-      // transaction id; open it once Paddle.js is ready.
-      if (paddle && transactionId) {
-        paddle.Checkout.open({ transactionId });
+      // A transaction created from the default payment link carries no device
+      // code, so paying it could never produce a key. Send the buyer to the
+      // page that collects one instead of opening a dead-end checkout.
+      if (transactionId) {
+        const notice = document.createElement("p");
+        notice.className = "muted";
+        notice.textContent =
+          "This payment link is missing your device code. Choose a plan here and we will ask for it before checkout.";
+        document.getElementById("buy-soon").replaceWith(notice);
       }
 
       fetch(ANDROID_RELEASE, {
