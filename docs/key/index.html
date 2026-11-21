@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Your OmniHub licence key</title>
+    <meta name="robots" content="noindex" />
+    <link rel="icon" href="../icon.png" />
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #0b1020;
+        --surface: #121a2e;
+        --border: #223048;
+        --text: #eef2ff;
+        --muted: #a9b4c9;
+        --primary: #4f46e5;
+        --primary-text: #ffffff;
+        --accent: #818cf8;
+        --ok: #16a34a;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: var(--bg);
+        color: var(--text);
+        font:
+          15px/1.6 -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          Roboto,
+          sans-serif;
+        display: flex;
+        justify-content: center;
+        padding: 32px 16px;
+      }
+      main {
+        width: 100%;
+        max-width: 560px;
+      }
+      h1 {
+        font-size: 22px;
+        margin: 0 0 6px;
+        letter-spacing: -0.02em;
+      }
+      .sub {
+        color: var(--muted);
+        margin: 0 0 24px;
+        font-size: 14px;
+      }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 16px;
+      }
+      .label {
+        color: var(--muted);
+        font-size: 11px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin: 0 0 10px;
+      }
+      #key {
+        margin: 0;
+        font:
+          13px/1.55 "Courier New",
+          Courier,
+          monospace;
+        word-break: break-all;
+        color: var(--text);
+        user-select: all;
+      }
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 18px;
+      }
+      button,
+      a.btn {
+        flex: 1 1 auto;
+        min-height: 48px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        border: 0;
+        border-radius: 10px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        padding: 0 18px;
+        font-family: inherit;
+      }
+      #copy {
+        background: var(--primary);
+        color: var(--primary-text);
+      }
+      #copy.done {
+        background: var(--ok);
+      }
+      a.btn {
+        background: transparent;
+        color: var(--accent);
+        border: 1px solid var(--border);
+      }
+      .hint {
+        color: var(--muted);
+        font-size: 13px;
+        margin: 14px 0 0;
+      }
+      .empty {
+        display: none;
+      }
+      .steps {
+        color: var(--muted);
+        font-size: 14px;
+        margin: 0;
+        padding-left: 18px;
+      }
+      .steps li {
+        margin-bottom: 6px;
+      }
+      .foot {
+        color: #7c8aa5;
+        font-size: 12px;
+        margin-top: 20px;
+      }
+      .foot a {
+        color: #7c8aa5;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Your licence key</h1>
+      <p class="sub">Copy it, then paste it into OmniHub.</p>
+
+      <div class="card" id="card" hidden>
+        <p class="label">Licence key</p>
+        <p id="key"></p>
+        <div class="row">
+          <button id="copy" type="button">Copy key</button>
+          <a class="btn" id="open" href="omnihub://licence">Open OmniHub</a>
+        </div>
+        <p class="hint" id="status" role="status" aria-live="polite"></p>
+      </div>
+
+      <div class="card" id="missing">
+        <p class="label">Open the link from your email</p>
+        <p class="sub" style="margin: 0">
+          This page needs the full link from your licence email; the key is part
+          of it. Open the email and tap <strong>Copy your licence key</strong>.
+        </p>
+      </div>
+
+      <div class="card">
+        <p class="label">Into the app</p>
+        <ol class="steps">
+          <li>Open OmniHub and go to Settings → Licence.</li>
+          <li>Paste the key.</li>
+          <li>Press Activate.</li>
+        </ol>
+      </div>
+
+      <p class="foot">
+        One key, one device. Keep your device code — it restores this licence
+        after a reinstall. Questions?
+        <a href="mailto:support@siamcreations.app">support@siamcreations.app</a>
+      </p>
+    </main>
+
+    <script>
+      // The key arrives in the fragment, so it is never sent to this server and
+      // never appears in a referrer. `#k=` is stripped off for display.
+      const raw = location.hash.startsWith("#k=") ? location.hash.slice(3) : "";
+      let key = "";
+      try {
+        key = decodeURIComponent(raw);
+      } catch {
+        key = "";
+      }
+
+      const card = document.getElementById("card");
+      const missing = document.getElementById("missing");
+      const keyEl = document.getElementById("key");
+      const copy = document.getElementById("copy");
+      const status = document.getElementById("status");
+      const open = document.getElementById("open");
+
+      if (!key) {
+        missing.classList.remove("empty");
+      } else {
+        card.hidden = false;
+        missing.remove();
+        keyEl.textContent = key;
+        open.href = `omnihub://licence?key=${encodeURIComponent(key)}`;
+      }
+
+      async function copyKey() {
+        try {
+          await navigator.clipboard.writeText(key);
+        } catch {
+          // Older mobile browsers: select the block so the long-press menu has
+          // something to copy.
+          const range = document.createRange();
+          range.selectNodeContents(keyEl);
+          const selection = getSelection();
+          selection.removeAllRanges();
+          selection.addRange(range);
+          document.execCommand && document.execCommand("copy");
+        }
+        copy.textContent = "Copied";
+        copy.classList.add("done");
+        status.textContent =
+          "Now open OmniHub → Settings → Licence and paste it.";
+        setTimeout(() => {
+          copy.textContent = "Copy key";
+          copy.classList.remove("done");
+        }, 2500);
+      }
+
+      copy.addEventListener("click", copyKey);
+    </script>
+  </body>
+</html>
