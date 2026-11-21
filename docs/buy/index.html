@@ -165,7 +165,7 @@
         });
       } else {
         deviceCode.textContent = code;
-        if (!looksValid) {
+        if (!looksValid(code)) {
           status.textContent =
             "That code does not check out. Copy it again from the app's licence screen — a mistyped code cannot be turned into a key.";
           plans.hidden = true;
@@ -173,7 +173,7 @@
       }
 
       let paddle = null;
-      if (looksValid && window.Paddle) {
+      if (looksValid(code) && window.Paddle) {
         try {
           // A test_ token is only accepted once Paddle.js is told which
           // environment it belongs to; without this the overlay renders
@@ -195,6 +195,13 @@
             return;
           }
           const plan = button.getAttribute("data-plan");
+          // Re-check here, not only above: taking money for a device code that
+          // cannot be turned into a key is the one failure with no recourse.
+          if (!looksValid(code)) {
+            status.textContent =
+              "That code does not check out. Copy it again from the app's licence screen.";
+            return;
+          }
           status.textContent = "Opening checkout…";
           paddle.Checkout.open({
             items: [{ priceId: PRICES[plan], quantity: 1 }],
