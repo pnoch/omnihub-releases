@@ -175,6 +175,12 @@
       let paddle = null;
       if (looksValid && window.Paddle) {
         try {
+          // A test_ token is only accepted once Paddle.js is told which
+          // environment it belongs to; without this the overlay renders
+          // "Something went wrong" rather than a payment form.
+          if (environment === "sandbox") {
+            window.Paddle.Environment.set("sandbox");
+          }
           window.Paddle.Initialize({ token: PADDLE_CLIENT_TOKEN });
           paddle = window.Paddle;
         } catch (error) {
