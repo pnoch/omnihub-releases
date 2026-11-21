@@ -113,7 +113,7 @@
         banner.style.cssText =
           "background:#fef3c7;color:#78350f;padding:10px 12px;border-radius:10px;font-weight:600";
         banner.textContent =
-          "Test mode: sandbox checkout. No money is taken. Use card 4000 0000 0000 3220, expiry 12/30, CVC 123 — it asks for a 3-D Secure step, where any code works.";
+          "Test mode: sandbox checkout. No money is taken. Card 5555 5555 5555 4444 (12/30, CVC 123) completes straight away; 4000 0000 0000 3220 works but asks for a 3-D Secure step.";
         document.querySelector("main").prepend(banner);
       }
       const code = (params.get("code") ?? "").trim().toUpperCase();
