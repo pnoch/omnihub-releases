@@ -265,25 +265,22 @@
         }
       }
 
-      function wireCheckout(id, priceId) {
+      // Checkout has to carry the buyer's device code, and only /buy collects
+      // it. Opening a Paddle overlay here would take money for a sale that
+      // fulfilment must refuse, so the buttons hand over to that page.
+      function wireCheckout(id) {
         const button = document.getElementById(id);
-        if (!button || !paddle || !priceId) return false;
+        if (!button) return false;
         button.hidden = false;
         button.addEventListener("click", (event) => {
           event.preventDefault();
-          paddle.Checkout.open({
-            items: [{ priceId, quantity: 1 }],
-            settings: { variant: "one-page" },
-          });
+          location.href = "https://omnihub.siamcreations.app/buy";
         });
         return true;
       }
 
-      const standardCheckout = wireCheckout(
-        "buy-standard",
-        PADDLE_PRICE_STANDARD,
-      );
-      const proCheckout = wireCheckout("buy-pro", PADDLE_PRICE_PRO);
+      const standardCheckout = wireCheckout("buy-standard");
+      const proCheckout = wireCheckout("buy-pro");
       if (standardCheckout || proCheckout) {
         document.getElementById("buy-soon").hidden = true;
       }
