@@ -81,14 +81,41 @@
 
     <script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
     <script>
-      // Live values. The client token is public by design.
-      const PADDLE_CLIENT_TOKEN = "live_b196e2ba710b930d6958e7e965c";
-      const PRICES = {
-        standard: "pri_01m7knq6x95m3g07vkq6m7jgtp",
-        pro: "pri_01m7knq8g3nz5x0tp04qxcgd8t",
+      // Client tokens are public by design; the API key never appears here.
+      // Sandbox exists so a rehearsal can run with Paddle's test cards: no
+      // money moves, and the prices are separate sandbox objects.
+      const ENVIRONMENTS = {
+        live: {
+          clientToken: "live_b196e2ba710b930d6958e7e965c",
+          prices: {
+            standard: "pri_01m7knq6x95m3g07vkq6m7jgtp",
+            pro: "pri_01m7knq8g3nz5x0tp04qxcgd8t",
+          },
+        },
+        sandbox: {
+          clientToken: "test_a5a7034cc3ddff4cb977dd7ec63",
+          prices: {
+            standard: "pri_01m7jmgnk3rga2db8vye733nhx",
+            pro: "pri_01m7jmgnwreqdqwpfjaw1e2107",
+          },
+        },
       };
 
       const params = new URLSearchParams(location.search);
+      // Opt-in only: a buyer cannot reach sandbox by accident, and a test
+      // checkout cannot be mistaken for a real purchase.
+      const environment = params.get("env") === "sandbox" ? "sandbox" : "live";
+      const PADDLE_CLIENT_TOKEN = ENVIRONMENTS[environment].clientToken;
+      const PRICES = ENVIRONMENTS[environment].prices;
+
+      if (environment === "sandbox") {
+        const banner = document.createElement("p");
+        banner.style.cssText =
+          "background:#fef3c7;color:#78350f;padding:10px 12px;border-radius:10px;font-weight:600";
+        banner.textContent =
+          "Test mode: sandbox checkout. No money is taken and a test card is required.";
+        document.querySelector("main").prepend(banner);
+      }
       const code = (params.get("code") ?? "").trim().toUpperCase();
       const deviceCode = document.getElementById("device-code");
       const status = document.getElementById("status");
