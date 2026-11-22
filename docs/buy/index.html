@@ -244,12 +244,11 @@
             customData: { device_code: code },
             settings: {
               variant: "one-page",
-              // Only Android can open the app again. On a desktop browser this
-              // URL has no handler and the thank-you page becomes an error, so
-              // leave Paddle's own confirmation in place there.
-              ...(/Android/i.test(navigator.userAgent)
-                ? { successUrl: "omnihub://licence?purchased=1" }
-                : {}),
+              // No successUrl. Paddle validates it and rejects the whole
+              // checkout for a custom scheme ("The value for successUrl is
+              // invalid"), which on a phone meant the overlay never opened at
+              // all. Paddle's own confirmation is the end of the flow; the key
+              // arrives by email and the app's own link takes it from there.
             },
           });
         });
