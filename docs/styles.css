@@ -275,7 +275,6 @@ h2 {
 }
 
 .licence {
-
   background: var(--accent);
   border-radius: var(--radius);
   padding: 30px;
@@ -327,7 +326,9 @@ footer.site a:hover {
 }
 
 .legal {
-  padding: 40px 0 60px;
+  /* Block padding only: a shorthand here would override `.wrap`'s horizontal
+     padding and leave the text flush against both screen edges. */
+  padding-block: 40px 60px;
 }
 
 .legal h1 {
@@ -359,4 +360,81 @@ footer.site a:hover {
   .hero {
     padding-top: 48px;
   }
+}
+
+/* ── Buy page ───────────────────────────────────────────────────────────────
+   The device code is the one thing a buyer must get right, so it is a card of
+   its own rather than a sentence, and the plans are full-width rows so the
+   price is readable on a phone without zooming. */
+.device-card {
+  margin: 20px 0 24px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.device-label {
+  margin: 0 0 6px;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.device-code {
+  margin: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: clamp(15px, 4.6vw, 20px);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}
+
+#plans {
+  display: grid;
+  gap: 12px;
+  margin: 0 0 24px;
+  max-width: 460px;
+}
+
+.plan-button {
+  display: grid;
+  gap: 2px;
+  width: 100%;
+  min-height: 64px;
+  padding: 14px 18px;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  background: var(--primary);
+  color: var(--primary-text);
+  text-align: start;
+  font: inherit;
+  cursor: pointer;
+}
+
+.plan-button:hover {
+  filter: brightness(1.06);
+}
+
+.plan-button:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.plan-name {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.plan-price {
+  font-size: 15px;
+  font-weight: 600;
+  opacity: 0.95;
+}
+
+.plan-note {
+  font-size: 12px;
+  opacity: 0.8;
 }

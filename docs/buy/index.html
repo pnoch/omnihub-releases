@@ -20,11 +20,14 @@
       <h1>Buy OmniHub</h1>
       <p class="updated">One-time licence. One device per key.</p>
 
-      <p id="device-line">Device code: <strong id="device-code">—</strong></p>
-      <p class="muted" id="device-hint">
-        This code came from the app. The key is issued for this device, so it
-        cannot be used anywhere else.
-      </p>
+      <div class="device-card">
+        <p class="device-label">Your device code</p>
+        <p class="device-code" id="device-code">—</p>
+        <p class="muted" id="device-hint" style="margin: 6px 0 0">
+          This came from the app. The key is issued for this device, so it
+          cannot be used anywhere else.
+        </p>
+      </div>
 
       <div id="collect" hidden>
         <p>
@@ -52,21 +55,23 @@
       </div>
 
       <div id="plans">
-        <p>
-          <button class="button primary" data-plan="standard" type="button">
-            Buy Standard — US$9.99
-          </button>
-        </p>
-        <p>
-          <button class="button primary" data-plan="pro" type="button">
-            Buy Pro — US$19.99
-          </button>
-        </p>
+        <button class="plan-button" data-plan="standard" type="button">
+          <span class="plan-name">Standard</span>
+          <span class="plan-price">US$9.99</span>
+          <span class="plan-note">One-time · one device</span>
+        </button>
+        <button class="plan-button" data-plan="pro" type="button">
+          <span class="plan-name">Pro</span>
+          <span class="plan-price">US$19.99</span>
+          <span class="plan-note"
+            >Standard, plus translation and auto-tagging</span
+          >
+        </button>
         <p class="muted">
-          Your key is issued for the device code above and sent to the email
-          address you use at checkout, usually within a few hours. It is not
-          sent instantly: if it has not arrived by the next day, reply to the
-          Paddle receipt and we will sort it out.
+          Your key is emailed to the address you use at checkout, usually within
+          a minute of payment. If it has not arrived after a few minutes, check
+          your spam folder, then reply to the Paddle receipt and we will sort it
+          out.
         </p>
       </div>
 
