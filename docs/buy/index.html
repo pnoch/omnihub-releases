@@ -179,6 +179,8 @@
       }
 
       let paddle = null;
+      let overlayLoaded = false;
+      let openingTimer = null;
       if (looksValid(code) && window.Paddle) {
         try {
           // A test_ token is only accepted once Paddle.js is told which
@@ -199,6 +201,8 @@
                   : "Checkout could not open. Try another browser, or contact support.";
               }
               if (event?.name === "checkout.loaded") {
+                overlayLoaded = true;
+                clearTimeout(openingTimer);
                 status.textContent = "";
               }
             },
@@ -224,6 +228,16 @@
             return;
           }
           status.textContent = "Opening checkout…";
+          // Paddle can refuse silently: no error event, no overlay, and the
+          // page waits forever. If the overlay has not loaded in fifteen
+          // seconds, say so and give the buyer something to do.
+          clearTimeout(openingTimer);
+          openingTimer = setTimeout(() => {
+            if (overlayLoaded) return;
+            status.textContent =
+              "Checkout did not open. Please try again, or disable any content blocker and reload. " +
+              "If it still does not open, email support@siamcreations.app and we will take the payment directly.";
+          }, 15000);
           paddle.Checkout.open({
             items: [{ priceId: PRICES[plan], quantity: 1 }],
             // Travels to the webhook, which mints the key for this device.
