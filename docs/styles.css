@@ -438,3 +438,8 @@ footer.site a:hover {
   font-size: 12px;
   opacity: 0.8;
 }
+
+/* A placeholder that is a sentence should not look like a code. */
+.device-code[title=""] {
+  letter-spacing: 0;
+}

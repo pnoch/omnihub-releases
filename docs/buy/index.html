@@ -159,9 +159,9 @@
       }
 
       if (!code) {
-        deviceCode.textContent = "—";
+        deviceCode.textContent = "Not provided yet";
         document.getElementById("device-hint").textContent =
-          "Enter the code from the app to continue.";
+          "Enter the code from Settings → Licence in the app, so the key is issued for your device.";
         document.getElementById("collect").hidden = false;
         plans.hidden = true;
         document.getElementById("use-code").addEventListener("click", () => {
@@ -170,6 +170,7 @@
         });
       } else {
         deviceCode.textContent = code;
+        deviceCode.title = code;
         if (!looksValid(code)) {
           status.textContent =
             "That code does not check out. Copy it again from the app's licence screen — a mistyped code cannot be turned into a key.";
