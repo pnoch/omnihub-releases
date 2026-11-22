@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Thank you — OmniHub</title>
+    <meta name="robots" content="noindex" />
+    <link rel="icon" href="../icon.png" />
+    <link rel="stylesheet" href="../styles.css" />
+  </head>
+  <body>
+    <header class="site">
+      <div class="wrap">
+        <img src="../icon.png" alt="" />
+        <span class="name"><a href="../">OmniHub</a></span>
+      </div>
+    </header>
+
+    <main class="legal wrap">
+      <h1>Thank you</h1>
+      <p class="updated">Your licence key is on its way.</p>
+
+      <div class="device-card">
+        <p class="device-label">What happens next</p>
+        <ol class="steps">
+          <li>
+            We email the key to the address you used at checkout — usually
+            within a minute.
+          </li>
+          <li>
+            In OmniHub, open <strong>Settings → Licence</strong> and paste it.
+          </li>
+          <li>Press Activate. Downloads and playback unlock straight away.</li>
+        </ol>
+      </div>
+
+      <p class="muted">
+        The key is issued for the device code you entered, so it will not work
+        on another device. Keep the device code shown in the app: after a
+        reinstall it restores this licence without a reissue.
+      </p>
+
+      <p class="muted" id="order-line" hidden></p>
+
+      <p class="muted">
+        No email after a few minutes? Check your spam folder, then reply to the
+        Paddle receipt or write to
+        <a href="mailto:support@siamcreations.app">support@siamcreations.app</a>
+        and we will sort it out.
+      </p>
+
+      <p>
+        <a class="button primary" href="../">Back to OmniHub</a>
+      </p>
+    </main>
+
+    <script>
+      // Paddle appends ?_ptxn=<transaction> to the success URL. Showing it costs
+      // nothing and gives a support thread something exact to quote.
+      const txn = new URLSearchParams(location.search).get("_ptxn");
+      if (txn) {
+        const line = document.getElementById("order-line");
+        line.textContent = `Order: ${txn}`;
+        line.hidden = false;
+      }
+    </script>
+  </body>
+</html>

@@ -244,11 +244,11 @@
             customData: { device_code: code },
             settings: {
               variant: "one-page",
-              // No successUrl. Paddle validates it and rejects the whole
-              // checkout for a custom scheme ("The value for successUrl is
-              // invalid"), which on a phone meant the overlay never opened at
-              // all. Paddle's own confirmation is the end of the flow; the key
-              // arrives by email and the app's own link takes it from there.
+              // An https success URL, unlike the custom scheme that Paddle
+              // rejected. Without it the buyer is sent to the account's default
+              // payment link — now the company site, since other apps sell
+              // there too — which is not a thank-you for this purchase.
+              successUrl: "https://omnihub.siamcreations.app/purchased",
             },
           });
         });
