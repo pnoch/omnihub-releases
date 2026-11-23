@@ -159,7 +159,9 @@
             if (top ^ ((byte >> bit) & 1)) crc ^= 0x05;
           }
         }
-        return text[15] === ALPHABET[crc & 31];
+        // Older distributed apps still print the legacy checksum.
+        const legacy = (bytes[0] ^ bytes[1] ^ bytes[2]) & 31;
+        return text[15] === ALPHABET[crc & 31] || text[15] === ALPHABET[legacy];
       }
 
       function looksValid(code) {
