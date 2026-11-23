@@ -8,19 +8,28 @@
     <link rel="icon" href="../icon.png" />
     <link rel="stylesheet" href="../styles.css" />
     <style>
-      #key-card textarea {
-        width: 100%;
-        box-sizing: border-box;
+      #key-text {
+        margin: 0;
         font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
         font-size: 12px;
-        line-height: 1.5;
+        line-height: 1.55;
+        white-space: pre-wrap;
         word-break: break-all;
-        resize: none;
-        padding: 10px 12px;
+        padding: 12px;
         border-radius: 10px;
-        border: 1px solid #2a3550;
-        background: rgba(0, 0, 0, 0.25);
-        color: inherit;
+        border: 1px solid var(--border, #2a3550);
+        background: var(--surface, rgba(0, 0, 0, 0.04));
+      }
+      #key-copy {
+        font: inherit;
+        font-weight: 650;
+        min-height: 44px;
+        padding: 0 20px;
+        border-radius: 10px;
+        cursor: pointer;
+        background: var(--surface, #fff);
+        color: var(--text, inherit);
+        border: 1px solid var(--border, #2a3550);
       }
     </style>
   </head>
@@ -34,13 +43,13 @@
 
     <main class="legal wrap">
       <h1>Thank you</h1>
-      <p class="updated">Your licence key is on its way.</p>
+      <p class="updated" id="lead">Your licence key is on its way.</p>
 
       <div class="device-card" id="key-card" hidden>
         <p class="device-label">Your licence key</p>
         <p class="muted" id="key-meta">Looking it up…</p>
         <p id="key-block" hidden>
-          <textarea id="key-text" readonly rows="3" spellcheck="false"></textarea>
+          <code id="key-text"></code>
         </p>
         <p id="key-actions" hidden>
           <button id="key-copy" type="button">Copy key</button>
@@ -56,7 +65,8 @@
             within a minute.
           </li>
           <li>
-            In OmniHub, open <strong>Settings → Licence</strong> and paste it.
+            In OmniHub, open <strong>Settings → Licence</strong> and paste the key
+            from above, or from the email.
           </li>
           <li>Press Activate. Downloads and playback unlock straight away.</li>
         </ol>
@@ -108,7 +118,9 @@
         const response = await fetch(`${API}/order/${encodeURIComponent(txn)}`);
         if (response.status === 200) {
           const order = await response.json();
-          area.value = order.key;
+          area.textContent = order.key;
+          document.getElementById("lead").textContent =
+            "Your licence key is below — no need to wait for the email.";
           meta.textContent = [order.serial, order.plan ? order.plan.charAt(0).toUpperCase() + order.plan.slice(1) : null]
             .filter(Boolean)
             .join(" · ");
@@ -141,13 +153,18 @@
 
       document.getElementById("key-copy").addEventListener("click", async () => {
         try {
-          await navigator.clipboard.writeText(area.value);
+          await navigator.clipboard.writeText(area.textContent);
           document.getElementById("key-copy").textContent = "Copied";
           setTimeout(() => {
             document.getElementById("key-copy").textContent = "Copy key";
           }, 2000);
         } catch {
-          area.select();
+          // Older browsers: put the key in a selection the reader can copy.
+          const range = document.createRange();
+          range.selectNodeContents(area);
+          const selection = window.getSelection();
+          selection.removeAllRanges();
+          selection.addRange(range);
         }
       });
 
