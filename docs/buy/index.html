@@ -147,8 +147,19 @@
           }
         }
         if (bytes.length !== 9) return false;
-        const expected = ALPHABET[(bytes[0] ^ bytes[1] ^ bytes[2]) & 31];
-        return text[15] === expected;
+        // Same 5-bit CRC over all nine bytes as the app and the service. This
+        // used to mix only the first three bytes, so a typo past the fifth
+        // character was accepted — and this page takes the money before the
+        // code is ever checked again.
+        let crc = 0x1f;
+        for (const byte of bytes) {
+          for (let bit = 7; bit >= 0; bit -= 1) {
+            const top = (crc >> 4) & 1;
+            crc = (crc << 1) & 0x1f;
+            if (top ^ ((byte >> bit) & 1)) crc ^= 0x05;
+          }
+        }
+        return text[15] === ALPHABET[crc & 31];
       }
 
       function looksValid(code) {
