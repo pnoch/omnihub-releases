@@ -9,6 +9,9 @@
     <link rel="stylesheet" href="../styles.css" />
     <style>
       #key-text {
+        /* An inline <code> draws its border per line fragment, which looks
+           broken across ten wrapped lines. */
+        display: block;
         margin: 0;
         font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
         font-size: 12px;
