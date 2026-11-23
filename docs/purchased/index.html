@@ -7,6 +7,22 @@
     <meta name="robots" content="noindex" />
     <link rel="icon" href="../icon.png" />
     <link rel="stylesheet" href="../styles.css" />
+    <style>
+      #key-card textarea {
+        width: 100%;
+        box-sizing: border-box;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 12px;
+        line-height: 1.5;
+        word-break: break-all;
+        resize: none;
+        padding: 10px 12px;
+        border-radius: 10px;
+        border: 1px solid #2a3550;
+        background: rgba(0, 0, 0, 0.25);
+        color: inherit;
+      }
+    </style>
   </head>
   <body>
     <header class="site">
@@ -19,6 +35,18 @@
     <main class="legal wrap">
       <h1>Thank you</h1>
       <p class="updated">Your licence key is on its way.</p>
+
+      <div class="device-card" id="key-card" hidden>
+        <p class="device-label">Your licence key</p>
+        <p class="muted" id="key-meta">Looking it up…</p>
+        <p id="key-block" hidden>
+          <textarea id="key-text" readonly rows="3" spellcheck="false"></textarea>
+        </p>
+        <p id="key-actions" hidden>
+          <button id="key-copy" type="button">Copy key</button>
+        </p>
+        <p class="muted" id="key-device" hidden></p>
+      </div>
 
       <div class="device-card">
         <p class="device-label">What happens next</p>
@@ -42,7 +70,7 @@
 
       <p class="muted" id="order-line" hidden></p>
 
-      <p class="muted">
+      <p class="muted" id="spam-line">
         No email after a few minutes? Check your spam folder, then reply to the
         Paddle receipt or write to
         <a href="mailto:support@siamcreations.app">support@siamcreations.app</a>
@@ -63,6 +91,81 @@
         line.textContent = `Order: ${txn}`;
         line.hidden = false;
       }
+
+      // The key is fetched here, not only emailed. A young domain's first
+      // message lands in junk on some providers, spam placement is invisible
+      // from the sending side, and the buyer is the one who finds out. This page
+      // already knows the order, so it can simply show what was bought.
+      const API = "https://fulfilment-production-8dd93b20.up.railway.app";
+      const card = document.getElementById("key-card");
+      const meta = document.getElementById("key-meta");
+      const block = document.getElementById("key-block");
+      const area = document.getElementById("key-text");
+      const actions = document.getElementById("key-actions");
+      const device = document.getElementById("key-device");
+
+      async function look() {
+        const response = await fetch(`${API}/order/${encodeURIComponent(txn)}`);
+        if (response.status === 200) {
+          const order = await response.json();
+          area.value = order.key;
+          meta.textContent = [order.serial, order.plan ? order.plan.charAt(0).toUpperCase() + order.plan.slice(1) : null]
+            .filter(Boolean)
+            .join(" · ");
+          if (order.deviceCode) {
+            device.textContent = `Issued for ${order.deviceCode}. Keep that code: after a reinstall it restores this licence without a reissue.`;
+            device.hidden = false;
+          }
+          block.hidden = false;
+          actions.hidden = false;
+          document.getElementById("spam-line").hidden = true;
+          return true;
+        }
+        if (response.status === 202) {
+          const body = await response.json().catch(() => ({}));
+          if (body.reason === "needs_code") {
+            meta.textContent =
+              "We could not read the device code from your order. Reply to your receipt with the code shown in OmniHub under Settings, then Licence, and we will finish it straight away.";
+            return true;
+          }
+          meta.textContent = "Preparing your key…";
+          return false;
+        }
+        if (response.status === 410) {
+          meta.textContent = "This order was refunded, so its licence is no longer valid.";
+          return true;
+        }
+        meta.textContent = `We could not find order ${txn}. Write to support@siamcreations.app and we will sort it out.`;
+        return true;
+      }
+
+      document.getElementById("key-copy").addEventListener("click", async () => {
+        try {
+          await navigator.clipboard.writeText(area.value);
+          document.getElementById("key-copy").textContent = "Copied";
+          setTimeout(() => {
+            document.getElementById("key-copy").textContent = "Copy key";
+          }, 2000);
+        } catch {
+          area.select();
+        }
+      });
+
+      (async () => {
+        if (!txn) return;
+        card.hidden = false;
+        // The webhook and the mint can take a few seconds; poll briefly rather
+        // than showing a spinner that never resolves.
+        for (let attempt = 0; attempt < 20; attempt += 1) {
+          try {
+            if (await look()) return;
+          } catch {
+            meta.textContent = "We could not reach the licence service. Your key will still arrive by email.";
+            return;
+          }
+          await new Promise((resolve) => setTimeout(resolve, 3000));
+        }
+      })();
     </script>
   </body>
 </html>
