@@ -177,6 +177,24 @@ a:focus-visible {
   font-size: 14px;
 }
 
+/* A 64-character digest has to wrap on a phone without pushing the page wide. */
+.hash-line {
+  color: var(--muted);
+  font-size: 13px;
+  margin: 12px 0 0;
+}
+
+.hash-line code {
+  display: block;
+  margin-top: 4px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text, inherit);
+  word-break: break-all;
+  user-select: all;
+}
+
 .hero .muted {
   margin-top: 14px;
 }

@@ -201,6 +201,19 @@
             >Desktop (Linux)</a
           >
         </div>
+        <p class="hash-line" id="android-hash" hidden>
+          Android APK SHA-256
+          <code id="android-hash-value"></code>
+        </p>
+        <p class="hash-line" id="desktop-hash" hidden>
+          Desktop AppImage SHA-256
+          <code id="desktop-hash-value"></code>
+        </p>
+        <p class="muted">
+          After downloading, compare with
+          <code>sha256sum &lt;file&gt;</code>. A mismatch means the transfer was
+          corrupted or the file did not come from this project.
+        </p>
         <p class="muted">
           Release notes and older versions live on
           <a href="https://github.com/pnoch/omnihub-releases/releases"
@@ -240,6 +253,8 @@
       // GitHub API (which does) for the asset instead of fetching the JSON.
       const ANDROID_RELEASE =
         "https://api.github.com/repos/pnoch/omnihub-releases/releases/tags/android-latest";
+      const DESKTOP_RELEASE =
+        "https://api.github.com/repos/pnoch/omnihub-releases/releases/latest";
 
       document.getElementById("year").textContent = String(
         new Date().getFullYear(),
@@ -296,6 +311,32 @@
         document.getElementById("buy-soon").replaceWith(notice);
       }
 
+      /**
+       * GitHub reports `sha256:` per asset. Showing it lets a buyer confirm the
+       * bytes they received are the ones this page advertises — a corrupted
+       * download or a swapped mirror is then visible instead of trusted.
+       */
+      function showDigest(digest, lineId, valueId) {
+        const match = /^sha256:([0-9a-f]{64})$/i.exec(digest || "");
+        if (!match) return;
+        document.getElementById(valueId).textContent = match[1];
+        document.getElementById(lineId).hidden = false;
+      }
+
+      fetch(DESKTOP_RELEASE, {
+        headers: { Accept: "application/vnd.github+json" },
+      })
+        .then((response) => (response.ok ? response.json() : null))
+        .then((release) => {
+          const appimage = release?.assets?.find((asset) =>
+            asset.name.endsWith(".AppImage"),
+          );
+          if (appimage) {
+            showDigest(appimage.digest, "desktop-hash", "desktop-hash-value");
+          }
+        })
+        .catch(() => {});
+
       fetch(ANDROID_RELEASE, {
         headers: { Accept: "application/vnd.github+json" },
       })
@@ -315,6 +356,7 @@
           document.getElementById("android-version").textContent =
             `${version ? `Version ${version[1]}` : "Latest build"}${size}. ` +
             "Android installs from an APK and updates itself in place.";
+          showDigest(apk.digest, "android-hash", "android-hash-value");
         })
         .catch(() => {
           // The release-page links still work without the API.
