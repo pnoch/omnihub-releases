@@ -205,6 +205,9 @@
           Android APK SHA-256
           <code id="android-hash-value"></code>
         </p>
+        <p class="hash-line" id="android-signed" hidden>
+          <strong id="android-signed-text"></strong>
+        </p>
         <p class="hash-line" id="desktop-hash" hidden>
           Desktop AppImage SHA-256
           <code id="desktop-hash-value"></code>
@@ -316,6 +319,74 @@
        * bytes they received are the ones this page advertises — a corrupted
        * download or a swapped mirror is then visible instead of trusted.
        */
+      /**
+       * GitHub's digest proves GitHub agrees with itself. This one is signed
+       * with the Siamcreations release key, so it can be checked against a key
+       * this project publishes rather than the host that served the file.
+       *
+       * The signature travels in the release body because release assets carry
+       * no CORS header and the page cannot read the manifest.
+       */
+      const RELEASE_KEY =
+        "daQHPiODzoye-IjRqLDLJf-PiYyL1CZgyryc98KGAKQ";
+
+      function signedBlock(body) {
+        const match =
+          /<!-- omnihub-release-signature -->([\s\S]*?)<!-- \/omnihub-release-signature -->/.exec(
+            body || "",
+          );
+        if (!match) return null;
+        const field = (name) =>
+          new RegExp(`^${name}:\\s*(\\S+)$`, "m").exec(match[1])?.[1] ?? null;
+        const file = field("APK");
+        const sha = field("SHA-256");
+        const sig = field("Ed25519");
+        return file && sha && sig ? { file, sha, sig } : null;
+      }
+
+      async function showSignature(apk) {
+        const block = signedBlock(apk.releaseBody);
+        if (!block || block.file !== apk.name) return;
+        const line = document.getElementById("android-signed");
+        const text = document.getElementById("android-signed-text");
+        const decode = (value) =>
+          Uint8Array.from(atob(value.replace(/-/g, "+").replace(/_/g, "/")), (c) =>
+            c.charCodeAt(0),
+          );
+        let key;
+        try {
+          key = await crypto.subtle.importKey(
+            "raw",
+            decode(RELEASE_KEY),
+            { name: "Ed25519" },
+            false,
+            ["verify"],
+          );
+        } catch {
+          // No Ed25519 in this browser. Say so rather than implying a check ran.
+          text.textContent =
+            "This browser cannot verify the release signature; compare the SHA-256 above.";
+          line.hidden = false;
+          return;
+        }
+        let verified = false;
+        try {
+          verified = await crypto.subtle.verify(
+            { name: "Ed25519" },
+            key,
+            decode(block.sig),
+            new TextEncoder().encode(`omnihub-apk|${block.file}|${block.sha}`),
+          );
+        } catch {
+          verified = false;
+        }
+        // A valid signature over different bytes is an attack, not a limitation.
+        text.textContent = verified
+          ? "Signature verified against the Siamcreations release key."
+          : "Signed, but the signature does not match this download. Do not install it.";
+        line.hidden = false;
+      }
+
       function showDigest(digest, lineId, valueId) {
         const match = /^sha256:([0-9a-f]{64})$/i.exec(digest || "");
         if (!match) return;
@@ -357,6 +428,7 @@
             `${version ? `Version ${version[1]}` : "Latest build"}${size}. ` +
             "Android installs from an APK and updates itself in place.";
           showDigest(apk.digest, "android-hash", "android-hash-value");
+          showSignature({ ...apk, releaseBody: release.body });
         })
         .catch(() => {
           // The release-page links still work without the API.
